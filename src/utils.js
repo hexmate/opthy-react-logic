@@ -65,21 +65,28 @@ export const useERC20Metadata = (ERC20Address) => {
         decimals = 18;
     }
 
-    const { chainId } = useWeb3React()
-    isSafe = useERC20IsSafe(chainId, ERC20Address)
+
+    const whitelist = useERC20TOKENSWhitelist()
+    const isWhitelisted = whitelist ? whitelist.has(ERC20Address) : false;
 
     const logo = useERC20Logo(symbol)
 
     //Add other ERC20 metadata here///////////////////////////
 
-    return { name, symbol, decimals, isSafe, logo }
+    return { name, symbol, decimals, isWhitelisted, logo }
 }
 
-const useERC20IsSafe = (chainId, ERC20Address) => {
-    if (chainId == 71393) { //ckETH and ckDAI token addresses
-        return ERC20Address == "0x034f40c41Bb7D27965623f7bb136CC44D78be5E7" || ERC20Address == "0xC818545C50a0E2568E031Ef9150849b396992880";
+export const useERC20TOKENSWhitelist = () => {
+    const t = {
+        71393: new Set([//Nervos Polyjuice
+            "0x034f40c41Bb7D27965623f7bb136CC44D78be5E7", // ckETH
+            "0xC818545C50a0E2568E031Ef9150849b396992880", // ckDAI
+            "0x1b98136005d568B23b7328F279948648992e1fD2", // ckUSDC
+            "0xEabAe0083967F2360848efC65C9c967135e80EE4", // ckUSDC
+        ])
     }
-    return false
+    const { chainId } = useWeb3React()
+    return t[chainId]
 }
 
 //Return webp images of the files, parcel reference: https://v2.parceljs.org/recipes/image/
