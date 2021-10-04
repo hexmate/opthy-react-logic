@@ -51,11 +51,14 @@ export const SWRProvider = () => {
     return library[arg1](...args)
   }
 
+  // const { polyaccount } = usePolyWeb3React() //polyaccount is different from account due to how nervos works
   return (
     <SWRConfig value={{ fetcher }}>
       {active ? (
         //Keep only opthy that has phase == 0
         // <Opthys filter={(o) => (o.phase == 0)} propsFactory={propsFactory} />
+        //Keep only opthy avaiable for buy that are not from this account
+        // <Opthys filter={(o) => (o.holder == zeroAccount() && o.seller != polyaccount)} propsFactory={propsFactory} />
 
         <Opthys propsFactory={propsFactory} />
       ) : (

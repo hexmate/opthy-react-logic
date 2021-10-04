@@ -1,11 +1,11 @@
 "use strict"
 
 import { formatUnits } from '@ethersproject/units';
-import { useERC20Metadata } from "./utils";
+import { useERC20Metadata, usePolyWeb3React } from "./utils";
 
 export const Opthy = (props) => {
     const data = useUnpackedOpthy(props.data)
-    const { address, lastEdit, phase, duration, holder, seller, token0, token1 } = data
+    const { address, lastEdit, phase, duration, holder, iAmHolder, seller, iAmSeller, token0, token1 } = data
     return (
         <div>
             <h3> Opthy {address} </h3>
@@ -14,7 +14,9 @@ export const Opthy = (props) => {
             <div>phase: {phase}</div>
             <div>duration: {duration}</div>
             <div>holder: {holder}</div>
+            <div>iAmHolder: {String(iAmHolder)}</div>
             <div>seller: {seller}</div>
+            <div>iAmSeller: {String(iAmSeller)}</div>
 
             <h4> Token 0 </h4>
             <div> address: {token0.address} </div>
@@ -54,8 +56,11 @@ const useUnpackedOpthy = (opthy) => {
     result.address = contractAddress;
     result.phase = phase;
     result.duration = duration;
+    const { polyaccount } = usePolyWeb3React() //polyaccount is different from account due to how nervos works
     result.holder = holder;
+    result.iAmHolder = (holder == polyaccount);
     result.seller = seller;
+    result.iAmSeller = (seller == polyaccount);
     if (phase > 0) {
         result.lastEdit = new Date(expiration * 1000);
     } else {

@@ -2,6 +2,7 @@
 
 import { useWeb3React, useEffect } from '@web3-react/core';
 import { AddressTranslator } from 'nervos-godwoken-integration';
+import { getAddress } from '@ethersproject/address';
 import useSWRImmutable from 'swr';
 
 export const supportedChainIds = () => [4, 71393]
@@ -29,13 +30,16 @@ export const name2ABI = (contractName) => {
     }
 }
 
+export const zeroAccount = () => "0x0000000000000000000000000000000000000000"
+
 export const usePolyWeb3React = () => {
     const result = useWeb3React();
 
     if (result.account) {
         if (isNervos(result.chainId)) {
             const addressTranslator = new AddressTranslator();
-            result.polyaccount = addressTranslator.ethAddressToGodwokenShortAddress(result.account);
+            polyaccount = addressTranslator.ethAddressToGodwokenShortAddress(result.account);
+            result.polyaccount = getAddress(polyaccount);//transform to Checksum Address
         } else {
             result.polyaccount = result.account;
         }
