@@ -5,19 +5,22 @@ import { AddressTranslator } from 'nervos-godwoken-integration';
 import { getAddress } from '@ethersproject/address';
 import useSWRImmutable from 'swr';
 
-export const supportedChainIds = () => [4, 71393]
+export const NervosChainId = 71393;
+export const RinkebyChainId = 4;
+
+export const supportedChainIds = () => [RinkebyChainId, NervosChainId]
 
 export const useOpthysAddress = () => {
     const { chainId } = useWeb3React()
-    if (chainId == 4) {
+    if (chainId == RinkebyChainId) {
         return "0x558c1f3ADC1A20E8Be8052840360Edd1020DB88f";
     }
-    if (chainId == 71393) {
+    if (chainId == NervosChainId) {
         return "0x085d9cE0e895D138af16fc0a080fa4159B0233c9";
     }
 }
 
-export const isNervos = (chainId) => (Number(chainId) == 71393);
+export const isNervos = (chainId) => (Number(chainId) == NervosChainId);
 
 const ERC20ABI = require("../assets/artifacts/IERC20Metadata").abi;
 const OPTHYSABI = require("opthy-v0-core/artifacts/Opthys").abi;
@@ -78,7 +81,7 @@ export const useERC20Metadata = (ERC20Address) => {
 
 export const useERC20TOKENSWhitelist = () => {
     const t = {
-        71393: new Set([//Nervos Polyjuice
+        NervosChainId: new Set([//Nervos Polyjuice
             "0x034f40c41Bb7D27965623f7bb136CC44D78be5E7", // ckETH
             "0xC818545C50a0E2568E031Ef9150849b396992880", // ckDAI
             "0x1b98136005d568B23b7328F279948648992e1fD2", // ckUSDC
