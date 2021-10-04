@@ -54,7 +54,10 @@ export const SWRProvider = () => {
   return (
     <SWRConfig value={{ fetcher }}>
       {active ? (
-        <Opthys filter={(o) => (o.phase == 0)} propsFactory={propsFactory} />
+        //Keep only opthy that has phase == 0
+        // <Opthys filter={(o) => (o.phase == 0)} propsFactory={propsFactory} />
+
+        <Opthys propsFactory={propsFactory} />
       ) : (
         <button type="button" onClick={onClick}>
           Connect Metamask
