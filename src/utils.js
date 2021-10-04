@@ -33,7 +33,7 @@ export const name2ABI = (contractName) => {
     }
 }
 
-export const zeroAccount = () => "0x0000000000000000000000000000000000000000"
+export const ZeroAccount = "0x0000000000000000000000000000000000000000"
 
 export const usePolyWeb3React = () => {
     const result = useWeb3React();
