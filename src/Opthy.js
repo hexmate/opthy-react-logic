@@ -20,6 +20,8 @@ export const Opthy = (props) => {
             <div> address: {token0.address} </div>
             <div> name: {token0.name} </div>
             <div> symbol: {token0.symbol} </div>
+            <div> isSafe: {String(token0.isSafe)} </div>
+            <div> logo: {token0.logo} </div>
             <div> balance: {formatUnits(token0.balance, token0.decimals)}</div>
             <div> r: {formatUnits(token0.r, token0.decimals)}</div>
             {data.fee ? <div>fee: {formatUnits(token0.fee, token0.decimals)} </div> : null}
@@ -29,6 +31,8 @@ export const Opthy = (props) => {
             <div> address: {token1.address} </div>
             <div> name: {token1.name} </div>
             <div> symbol: {token1.symbol} </div>
+            <div> isSafe: {String(token1.isSafe)} </div>
+            <div> logo: {token1.logo} </div>
             <div> balance: {formatUnits(token1.balance, token1.decimals)}</div>
             <div> r: {formatUnits(token1.r, token1.decimals)}</div>
 

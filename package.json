@@ -20,7 +20,9 @@
     "swr": "^1.0.1"
   },
   "devDependencies": {
-    "parcel": "latest"
+    "@parcel/resolver-glob": "nightly",
+    "@parcel/transformer-image": "nightly",
+    "parcel": "nightly"
   },
   "scripts": {
     "start": "parcel",

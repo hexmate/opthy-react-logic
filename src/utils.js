@@ -2,7 +2,7 @@
 
 import { useWeb3React, useEffect } from '@web3-react/core';
 import { AddressTranslator } from 'nervos-godwoken-integration';
-import useSWR from 'swr';
+import useSWRImmutable from 'swr';
 
 export const supportedChainIds = () => [4, 71393]
 
@@ -18,7 +18,7 @@ export const useOpthysAddress = () => {
 
 export const isNervos = (chainId) => (Number(chainId) == 71393);
 
-const ERC20ABI = require("../artifacts/IERC20Metadata").abi;
+const ERC20ABI = require("../assets/artifacts/IERC20Metadata").abi;
 const OPTHYSABI = require("opthy-v0-core/artifacts/Opthys").abi;
 export const name2ABI = (contractName) => {
     if (contractName == "ERC20") {
@@ -44,23 +44,47 @@ export const usePolyWeb3React = () => {
     return result
 }
 
+//Grab all ERC20 metadata with this function
 export const useERC20Metadata = (ERC20Address) => {
-    let { data: name, errName } = useSWR([ERC20Address, 'ERC20', 'name'])
+    let { data: name, errName } = useSWRImmutable([ERC20Address, 'ERC20', 'name'])
     if (errName || !name) {
-        name = ERC20Address;
+        name = ERC20Address.slice(-5);
     }
 
-    let { data: symbol, errSymbol } = useSWR([ERC20Address, 'ERC20', 'symbol'])
+    let { data: symbol, errSymbol } = useSWRImmutable([ERC20Address, 'ERC20', 'symbol'])
     if (errSymbol || !symbol) {
-        symbol = ERC20Address.slice(-3);
+        symbol = ERC20Address.slice(-5);
     }
 
-    let { data: decimals, errDecimals } = useSWR([ERC20Address, 'ERC20', 'decimals'])
+    let { data: decimals, errDecimals } = useSWRImmutable([ERC20Address, 'ERC20', 'decimals'])
     if (errDecimals || !decimals) {
         decimals = 18;
     }
 
-    //Add other metadata here///////////////////////////
+    const { chainId } = useWeb3React()
+    isSafe = useERC20IsSafe(chainId, ERC20Address)
 
-    return { name, symbol, decimals }
+    const logo = useERC20Logo(symbol)
+
+    //Add other ERC20 metadata here///////////////////////////
+
+    return { name, symbol, decimals, isSafe, logo }
+}
+
+const useERC20IsSafe = (chainId, ERC20Address) => {
+    if (chainId == 71393) { //ckETH and ckDAI token addresses
+        return ERC20Address == "0x034f40c41Bb7D27965623f7bb136CC44D78be5E7" || ERC20Address == "0xC818545C50a0E2568E031Ef9150849b396992880";
+    }
+    return false
+}
+
+//Return webp images of the files, parcel reference: https://v2.parceljs.org/recipes/image/
+import logos from "url:../assets/logos/*.webp"
+const useERC20Logo = (symbol) => {
+    //remove ck prefix, normalize name
+    if (symbol.length >= 5 && symbol.charAt(0) == 'c' && symbol.charAt(1) == 'k' && symbol.charAt(2) == symbol.charAt(2).toUpperCase()) {
+        symbol = symbol.slice(2)
+    }
+
+    return logos[symbol.toUpperCase()] || logos["unknown"]
 }
