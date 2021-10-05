@@ -1,6 +1,6 @@
 "use strict"
 
-import { useWeb3React, useEffect } from '@web3-react/core';
+import { useWeb3React } from '@web3-react/core';
 import { AddressTranslator } from 'nervos-godwoken-integration';
 import { getAddress } from '@ethersproject/address';
 import useSWRImmutable from 'swr';
@@ -10,13 +10,37 @@ export const RinkebyChainId = 4;
 
 export const supportedChainIds = () => [RinkebyChainId, NervosChainId]
 
+export const useChainCurrency = () => {
+    const { chainId } = useWeb3React()
+    if (chainId == NervosChainId) {
+        return "CKB"
+    }
+    if (chainId == RinkebyChainId) {
+        return "ETH"
+    }
+}
+
+export const useDefaultSendOptions = () => {
+    const { chainId } = useWeb3React()
+    if (chainId == NervosChainId) {
+        return {
+            gasLimit: 0x54d30,
+            gasPrice: 0x0,
+            value: 0x0,
+        }
+    }
+    if (chainId == RinkebyChainId) {
+        return {};
+    }
+}
+
 export const useOpthysAddress = () => {
     const { chainId } = useWeb3React()
-    if (chainId == RinkebyChainId) {
-        return "0x558c1f3ADC1A20E8Be8052840360Edd1020DB88f";
-    }
     if (chainId == NervosChainId) {
         return "0x085d9cE0e895D138af16fc0a080fa4159B0233c9";
+    }
+    if (chainId == RinkebyChainId) {
+        return "0x558c1f3ADC1A20E8Be8052840360Edd1020DB88f";
     }
 }
 
@@ -68,28 +92,31 @@ export const useERC20Metadata = (ERC20Address) => {
         decimals = 18;
     }
 
-
     const whitelist = useERC20TOKENSWhitelist()
     const isWhitelisted = whitelist ? whitelist.has(ERC20Address) : false;
 
     const logo = useERC20Logo(symbol)
 
+    const ABI = ERC20ABI
+
     //Add other ERC20 metadata here///////////////////////////
 
-    return { name, symbol, decimals, isWhitelisted, logo }
+    return { name, symbol, decimals, isWhitelisted, logo, ABI }
 }
 
 export const useERC20TOKENSWhitelist = () => {
-    const t = {
-        NervosChainId: new Set([//Nervos Polyjuice
+    const { chainId } = useWeb3React()
+    if (chainId == NervosChainId) {
+        return new Set([
             "0x034f40c41Bb7D27965623f7bb136CC44D78be5E7", // ckETH
             "0xC818545C50a0E2568E031Ef9150849b396992880", // ckDAI
             "0x1b98136005d568B23b7328F279948648992e1fD2", // ckUSDC
             "0xEabAe0083967F2360848efC65C9c967135e80EE4", // ckUSDC
         ])
     }
-    const { chainId } = useWeb3React()
-    return t[chainId]
+    if (chainId == RinkebyChainId) {
+        return new Set();
+    }
 }
 
 //Return webp images of the files, parcel reference: https://v2.parceljs.org/recipes/image/

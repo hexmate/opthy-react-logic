@@ -2,6 +2,7 @@
 
 import { formatUnits } from '@ethersproject/units';
 import { useERC20Metadata, usePolyWeb3React } from "./utils";
+import { ERC20Action } from "./ERC20Action";
 
 export const Opthy = (props) => {
     const data = useUnpackedOpthy(props.data)
@@ -38,11 +39,15 @@ export const Opthy = (props) => {
             <div> balance: {formatUnits(token1.balance, token1.decimals)}</div>
             <div> r: {formatUnits(token1.r, token1.decimals)}</div>
 
-            {props.actionLabel ? <button type="button" onClick={props.onClick}>{props.actionLabel}</button> : null}
+
+            <ERC20Action ERC20Metadata={token0} spender={address} amount="1" action={doNothing} actionLabel="No-op" />
+
+            {/* {props.actionLabel ? <button type="button" onClick={props.onClick}>{props.actionLabel}</button> : null} */}
         </div>
     )
-
-    return null
+}
+const doNothing = async () => {
+    console.log("No-op")
 }
 
 const useUnpackedOpthy = (opthy) => {
