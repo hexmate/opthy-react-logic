@@ -1,13 +1,16 @@
 "use strict"
 
-import { formatUnits } from '@ethersproject/units';
+import { formatUnits, formatEther } from '@ethersproject/units';
 import { useERC20Metadata, usePolyWeb3React, ZeroAccount, name2ABI } from "./utils";
 import { Action } from "./Action";
 import { ReclaimAction } from "./ReclaimAction";
+import useSWR from 'swr';
+
 
 export const Opthy = (props) => {
-    const data = useUnpackedOpthy(props.data)
-    const { address, lastEdit, phase, duration, owner, iAmOwner, holder, iAmHolder, seller, iAmSeller, price, token0, token1 } = data
+    const data = useUnpackedOpthy(props.data, props.mutateOpthy)
+
+    const { address, lastEdit, phase, duration, owner, iAmOwner, holder, iAmHolder, seller, iAmSeller, price, currencyBalance, token0, token1 } = data
     return (
         <div>
             <h3> Opthy {address} </h3>
@@ -22,6 +25,8 @@ export const Opthy = (props) => {
             <div>seller: {seller}</div>
             <div>iAmSeller: {String(iAmSeller)}</div>
             <div>price: {price}</div>
+            <div>currencyBalance: {formatEther(currencyBalance)}</div>
+
 
             <h4> Token 0 </h4>
             <div> address: {token0.address} </div>
@@ -33,6 +38,9 @@ export const Opthy = (props) => {
             <div> r: {formatUnits(token0.r, token0.decimals)}</div>
             {data.fee ? <div>fee: {formatUnits(token0.fee, token0.decimals)} </div> : null}
             {data.initialLiquidity ? <div>initialLiquidity: {formatUnits(token0.initialLiquidity, token0.decimals)} </div> : null}
+            <div> User Balance: {formatUnits(token0.UserBalance, token0.decimals)}</div>
+            <div> User Allowance: {formatUnits(token0.UserAllowance, token0.decimals)}</div>
+
 
             <h4> Token 1 </h4>
             <div> address: {token1.address} </div>
@@ -42,10 +50,12 @@ export const Opthy = (props) => {
             <div> logo: {token1.logo} </div>
             <div> balance: {formatUnits(token1.balance, token1.decimals)}</div>
             <div> r: {formatUnits(token1.r, token1.decimals)}</div>
+            <div> User Balance: {formatUnits(token1.UserBalance, token1.decimals)}</div>
+            <div> User Allowance: {formatUnits(token1.UserAllowance, token1.decimals)}</div>
 
-            <ReclaimAction data={data} />
-            {/* <Action ERC20={{ metadata: token0, spender: address, amount: 1 }} asyncAction={doNothing} actionLabel="No-op" /> */}
-            {/* <Action asyncAction={doNothing} actionLabel="No-op" /> */}
+            {/* <ReclaimAction data={data} /> */}
+            <Action ERC20={{ data: token0, spender: address, amount: 1 }} asyncAction={doNothing} actionLabel="No-op" currencyBalance={data.currencyBalance} mutate={data.mutate} />
+            {/* <Action asyncAction={doNothing} actionLabel="No-op" currencyBalance={data.currencyBalance} mutate={data.mutate} /> */}
 
             {/* {props.actionLabel ? <button type="button" onClick={props.onClick}>{props.actionLabel}</button> : null} */}
         </div>
@@ -55,14 +65,14 @@ const doNothing = async () => {
     console.log("No-op")
 }
 
-const useUnpackedOpthy = (opthy) => {
+const useUnpackedOpthy = (opthy, mutateOpthy) => {
     //phase during hagglig it's a positive serial number, after agreement becomes constant zero
     //duration is expressed in seconds
     //expiration is expressed in seconds since unix epoch,
     //when phase > 0 (during haggling) expiration is the creation-timestamp/last-modified-timestamp
     //when phase == 0 (after agreement) expiration contains the timestamp at which the opthy expires (agreement-timestamp + duration)
     result = {}
-    const { polyaccount } = usePolyWeb3React() //polyaccount is different from account due to how nervos works
+    const { account, polyaccount } = usePolyWeb3React() //polyaccount is different from account due to how nervos works
     const { opthy: contractAddress, phase, duration, holder, seller, expiration, token0: token0_, token1: token1_, balance0, balance1, r0, r1 } = opthy
     result.address = contractAddress;
     result.phase = phase;
@@ -79,6 +89,15 @@ const useUnpackedOpthy = (opthy) => {
         result.lastEdit = new Date((expiration - duration) * 1000);
         result.expiration = new Date(expiration * 1000);
     }
+    let {
+        data: currencyBalance,
+        mutate: mutateCurrencyBalance,
+        error: currencyBalanceError
+    } = useSWR(["getBalance", account, "latest"])
+    if (currencyBalanceError || !currencyBalance) {
+        currencyBalance = 0
+    }
+    result.currencyBalance = currencyBalance
 
     // result.token0
     token0 = useERC20Metadata(token0_);
@@ -95,6 +114,24 @@ const useUnpackedOpthy = (opthy) => {
             token0.fee = balance0;
         }
     }
+    let {
+        data: token0UserBalance,
+        mutate: mutateToken0UserBalance,
+        error: token0UserBalanceError
+    } = useSWR([token0.address, 'ERC20', 'balanceOf', polyaccount])
+    if (token0UserBalanceError || !token0UserBalance) {
+        token0UserBalance = 0
+    }
+    token0.UserBalance = token0UserBalance
+    let {
+        data: token0UserAllowance,
+        mutate: mutateToken0UserAllowance,
+        error: token0UserAllowanceError
+    } = useSWR([token0.address, 'ERC20', 'allowance', polyaccount, result.address])
+    if (token0UserAllowanceError || !token0UserAllowance) {
+        token0UserAllowance = 0
+    }
+    token0.UserAllowance = token0UserAllowance
     result.token0 = token0
 
     // result.token1
@@ -102,11 +139,38 @@ const useUnpackedOpthy = (opthy) => {
     token1.address = token1_;
     token1.balance = balance1;
     token1.r = r1;
+    let {
+        data: token1UserBalance,
+        mutate: mutateToken1UserBalance,
+        error: token1UserBalanceError
+    } = useSWR([token1.address, 'ERC20', 'balanceOf', polyaccount])
+    if (token1UserBalanceError || !token1UserBalance) {
+        token1UserBalance = 0
+    }
+    token1.UserBalance = token1UserBalance
+    let {
+        data: token1UserAllowance,
+        mutate: mutateToken1UserAllowance,
+        error: token1UserAllowanceError
+    } = useSWR([token1.address, 'ERC20', 'allowance', polyaccount, result.address])
+    if (token1UserAllowanceError || !token1UserAllowance) {
+        token1UserAllowance = 0
+    }
+    token1.UserAllowance = token1UserAllowance
     result.token1 = token1;
 
     result.price = Number(formatUnits(result.token0.r, result.token0.decimals)) / Number(formatUnits(result.token1.r, result.token1.decimals))
 
     result.ABI = name2ABI("Opthy")
+
+    result.mutate = () => {
+        mutateCurrencyBalance()
+        mutateToken0UserBalance()
+        mutateToken0UserAllowance()
+        mutateToken1UserBalance()
+        mutateToken1UserAllowance()
+        mutateOpthy()
+    }
 
     return result
 }

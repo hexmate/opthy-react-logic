@@ -81,18 +81,18 @@ export const usePolyWeb3React = () => {
 
 //Grab all ERC20 metadata with this function
 export const useERC20Metadata = (ERC20Address) => {
-    let { data: name, errName } = useSWRImmutable([ERC20Address, 'ERC20', 'name'])
-    if (errName || !name) {
+    let { data: name, nameError } = useSWRImmutable([ERC20Address, 'ERC20', 'name'])
+    if (nameError || !name) {
         name = ERC20Address.slice(-5);
     }
 
-    let { data: symbol, errSymbol } = useSWRImmutable([ERC20Address, 'ERC20', 'symbol'])
-    if (errSymbol || !symbol) {
+    let { data: symbol, symbolError } = useSWRImmutable([ERC20Address, 'ERC20', 'symbol'])
+    if (symbolError || !symbol) {
         symbol = ERC20Address.slice(-5);
     }
 
-    let { data: decimals, errDecimals } = useSWRImmutable([ERC20Address, 'ERC20', 'decimals'])
-    if (errDecimals || !decimals) {
+    let { data: decimals, decimalsError } = useSWRImmutable([ERC20Address, 'ERC20', 'decimals'])
+    if (decimalsError || !decimals) {
         decimals = 18;
     }
 

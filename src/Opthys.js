@@ -30,7 +30,7 @@ export const Opthys = (props) => {
   propsFactory = props.propsFactory || emptyPropsFactory
 
   //o.opthy is the opthy contract addres
-  return <>{opthys.map((o) => <Opthy key={o.opthy} data={o} {...propsFactory(o)} />)}</>
+  return <>{opthys.map((o) => <Opthy key={o.opthy} data={o} mutateOpthy={mutate} {...propsFactory(o)} />)}</>
 }
 
 function emptyPropsFactory(o) {
