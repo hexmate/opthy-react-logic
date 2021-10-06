@@ -7,7 +7,7 @@ import { ReclaimAction } from "./ReclaimAction";
 
 export const Opthy = (props) => {
     const data = useUnpackedOpthy(props.data)
-    const { address, lastEdit, phase, duration, owner, iAmOwner, holder, iAmHolder, seller, iAmSeller, token0, token1 } = data
+    const { address, lastEdit, phase, duration, owner, iAmOwner, holder, iAmHolder, seller, iAmSeller, price, token0, token1 } = data
     return (
         <div>
             <h3> Opthy {address} </h3>
@@ -21,6 +21,7 @@ export const Opthy = (props) => {
             <div>iAmHolder: {String(iAmHolder)}</div>
             <div>seller: {seller}</div>
             <div>iAmSeller: {String(iAmSeller)}</div>
+            <div>price: {price}</div>
 
             <h4> Token 0 </h4>
             <div> address: {token0.address} </div>
@@ -102,6 +103,8 @@ const useUnpackedOpthy = (opthy) => {
     token1.balance = balance1;
     token1.r = r1;
     result.token1 = token1;
+
+    result.price = Number(formatUnits(result.token0.r, result.token0.decimals)) / Number(formatUnits(result.token1.r, result.token1.decimals))
 
     result.ABI = name2ABI("Opthy")
 
