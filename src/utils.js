@@ -8,7 +8,8 @@ import useSWRImmutable from 'swr';
 export const NervosChainId = 71393;
 export const RinkebyChainId = 4;
 
-export const supportedChainIds = () => [RinkebyChainId, NervosChainId]
+// export const supportedChainIds = () => [RinkebyChainId, NervosChainId]
+export const supportedChainIds = () => [NervosChainId]
 
 export const useChainCurrency = () => {
     const { chainId } = useWeb3React()
@@ -115,7 +116,7 @@ export const useERC20TOKENSWhitelist = () => {
             "0x034f40c41Bb7D27965623f7bb136CC44D78be5E7", // ckETH
             "0xC818545C50a0E2568E031Ef9150849b396992880", // ckDAI
             "0x1b98136005d568B23b7328F279948648992e1fD2", // ckUSDC
-            "0xEabAe0083967F2360848efC65C9c967135e80EE4", // ckUSDC
+            "0xEabAe0083967F2360848efC65C9c967135e80EE4", // ckUSDT
         ])
     }
     if (chainId == RinkebyChainId) {

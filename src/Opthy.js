@@ -26,7 +26,7 @@ export const Opthy = (props) => {
             <h3> Opthy {address} </h3>
             <div>lastEdit: {lastEdit.toLocaleString()}</div>
             {data.expiration ? <div>expiration: {data.expiration.toLocaleString()} </div> : null}
-            <div>phase: {phase}</div>
+            {/* <div>phase: {phase}</div> */}
             <div>duration: {duration}</div>
             <div>owner: {owner}</div>
             <div>iAmOwner: {String(iAmOwner)}</div>
@@ -35,33 +35,33 @@ export const Opthy = (props) => {
             <div>seller: {seller}</div>
             <div>iAmSeller: {String(iAmSeller)}</div>
             <div>price: {price}</div>
-            <div>currencyBalance: {formatEther(currencyBalance)}</div>
+            {/* <div>currencyBalance: {formatEther(currencyBalance)}</div> */}
 
 
             <h4> Token 0 </h4>
             <div> address: {token0.address} </div>
-            <div> name: {token0.name} </div>
+            {/* <div> name: {token0.name} </div> */}
             <div> symbol: {token0.symbol} </div>
             <div> isWhitelisted: {String(token0.isWhitelisted)} </div>
-            <div> logo: {token0.logo} </div>
+            {/* <div> logo: {token0.logo} </div> */}
             <div> balance: {formatUnits(token0.balance, token0.decimals)}</div>
             <div> r: {formatUnits(token0.r, token0.decimals)}</div>
             {data.fee ? <div>fee: {formatUnits(token0.fee, token0.decimals)} </div> : null}
             {data.initialLiquidity ? <div>initialLiquidity: {formatUnits(token0.initialLiquidity, token0.decimals)} </div> : null}
-            <div> User Balance: {formatUnits(token0.UserBalance, token0.decimals)}</div>
-            <div> User Allowance: {formatUnits(token0.UserAllowance, token0.decimals)}</div>
+            {/* <div> User Balance: {formatUnits(token0.UserBalance, token0.decimals)}</div> */}
+            {/* <div> User Allowance: {formatUnits(token0.UserAllowance, token0.decimals)}</div> */}
 
 
             <h4> Token 1 </h4>
             <div> address: {token1.address} </div>
-            <div> name: {token1.name} </div>
+            {/* <div> name: {token1.name} </div> */}
             <div> symbol: {token1.symbol} </div>
             <div> isWhitelisted: {String(token1.isWhitelisted)} </div>
-            <div> logo: {token1.logo} </div>
+            {/* <div> logo: {token1.logo} </div> */}
             <div> balance: {formatUnits(token1.balance, token1.decimals)}</div>
             <div> r: {formatUnits(token1.r, token1.decimals)}</div>
-            <div> User Balance: {formatUnits(token1.UserBalance, token1.decimals)}</div>
-            <div> User Allowance: {formatUnits(token1.UserAllowance, token1.decimals)}</div>
+            {/* <div> User Balance: {formatUnits(token1.UserBalance, token1.decimals)}</div> */}
+            {/* <div> User Allowance: {formatUnits(token1.UserAllowance, token1.decimals)}</div> */}
 
             {status ? <div> Status: {status} </div> : null}
 
@@ -76,7 +76,7 @@ const doNothing = async () => {
     console.log("No-op")
 }
 
-const useUnpackedOpthy = (opthy, mutateOpthy) => {
+export const useUnpackedOpthy = (opthy, mutateOpthy) => {
     //phase during hagglig it's a positive serial number, after agreement becomes constant zero
     //duration is expressed in seconds
     //expiration is expressed in seconds since unix epoch,

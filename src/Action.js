@@ -8,7 +8,7 @@ import { useState } from 'react';
 const maxUint256 = "115792089237316195423570985008687907853269984665640564039457584007913129639935"
 
 export const Action = (props) => {
-    const { ERC20, asyncAction, actionLabel, currencyBalance, setStatus } = props
+    const { ERC20, asyncAction, actionLabel, actionType, currencyBalance, setStatus } = props
     const { library } = useWeb3React()
     const currency = useChainCurrency()
     const defaultSendOptions = useDefaultSendOptions()
@@ -62,5 +62,5 @@ export const Action = (props) => {
         setIsActionating(false)
 
     }
-    return <button type="button" onClick={actionate}>{actionLabel}</button>
+    return <button type={actionType ? actionType : "button"} onClick={actionate}> {actionLabel}</button >
 }

@@ -9,6 +9,7 @@ import { PolyjuiceHttpProvider } from "@polyjuice-provider/web3";
 import { SWRConfig } from 'swr'
 import { isNervos, name2ABI, supportedChainIds } from "./utils";
 import { Opthys } from "./Opthys";
+import { NewOpthy } from "./NewOpthy";
 
 
 export const App = () => {
@@ -59,8 +60,10 @@ export const SWRProvider = () => {
         // <Opthys filter={(o) => (o.phase == 0)} propsFactory={propsFactory} />
         //Keep only opthy avaiable for buy that are not from this account
         // <Opthys filter={(o) => (o.holder == ZeroAccount && o.seller != polyaccount)} propsFactory={propsFactory} />
-
-        <Opthys propsFactory={propsFactory} />
+        <>
+          <NewOpthy />
+          <Opthys propsFactory={propsFactory} />
+        </>
       ) : (
         <button type="button" onClick={onClick}>
           Connect Metamask
