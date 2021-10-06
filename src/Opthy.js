@@ -1,12 +1,13 @@
 "use strict"
 
 import { formatUnits } from '@ethersproject/units';
-import { useERC20Metadata, usePolyWeb3React } from "./utils";
-import { ERC20Action } from "./ERC20Action";
+import { useERC20Metadata, usePolyWeb3React, ZeroAccount, name2ABI } from "./utils";
+import { Action } from "./Action";
+import { ReclaimAction } from "./ReclaimAction";
 
 export const Opthy = (props) => {
     const data = useUnpackedOpthy(props.data)
-    const { address, lastEdit, phase, duration, holder, iAmHolder, seller, iAmSeller, token0, token1 } = data
+    const { address, lastEdit, phase, duration, owner, iAmOwner, holder, iAmHolder, seller, iAmSeller, token0, token1 } = data
     return (
         <div>
             <h3> Opthy {address} </h3>
@@ -14,6 +15,8 @@ export const Opthy = (props) => {
             {data.expiration ? <div>expiration: {data.expiration.toLocaleString()} </div> : null}
             <div>phase: {phase}</div>
             <div>duration: {duration}</div>
+            <div>owner: {owner}</div>
+            <div>iAmOwner: {String(iAmOwner)}</div>
             <div>holder: {holder}</div>
             <div>iAmHolder: {String(iAmHolder)}</div>
             <div>seller: {seller}</div>
@@ -39,8 +42,9 @@ export const Opthy = (props) => {
             <div> balance: {formatUnits(token1.balance, token1.decimals)}</div>
             <div> r: {formatUnits(token1.r, token1.decimals)}</div>
 
-
-            <ERC20Action ERC20Metadata={token0} spender={address} amount="1" action={doNothing} actionLabel="No-op" />
+            <ReclaimAction data={data} />
+            {/* <Action ERC20={{ metadata: token0, spender: address, amount: 1 }} asyncAction={doNothing} actionLabel="No-op" /> */}
+            {/* <Action asyncAction={doNothing} actionLabel="No-op" /> */}
 
             {/* {props.actionLabel ? <button type="button" onClick={props.onClick}>{props.actionLabel}</button> : null} */}
         </div>
@@ -57,11 +61,13 @@ const useUnpackedOpthy = (opthy) => {
     //when phase > 0 (during haggling) expiration is the creation-timestamp/last-modified-timestamp
     //when phase == 0 (after agreement) expiration contains the timestamp at which the opthy expires (agreement-timestamp + duration)
     result = {}
+    const { polyaccount } = usePolyWeb3React() //polyaccount is different from account due to how nervos works
     const { opthy: contractAddress, phase, duration, holder, seller, expiration, token0: token0_, token1: token1_, balance0, balance1, r0, r1 } = opthy
     result.address = contractAddress;
     result.phase = phase;
     result.duration = duration;
-    const { polyaccount } = usePolyWeb3React() //polyaccount is different from account due to how nervos works
+    result.owner = seller != ZeroAccount ? seller : holder;
+    result.iAmOwner = (result.owner == polyaccount)
     result.holder = holder;
     result.iAmHolder = (holder == polyaccount);
     result.seller = seller;
@@ -96,6 +102,8 @@ const useUnpackedOpthy = (opthy) => {
     token1.balance = balance1;
     token1.r = r1;
     result.token1 = token1;
+
+    result.ABI = name2ABI("Opthy")
 
     return result
 }

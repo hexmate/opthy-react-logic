@@ -47,10 +47,14 @@ export const useOpthysAddress = () => {
 export const isNervos = (chainId) => (Number(chainId) == NervosChainId);
 
 const ERC20ABI = require("../assets/artifacts/IERC20Metadata").abi;
+const OPTHYABI = require("opthy-v0-core/artifacts/Opthy").abi;
 const OPTHYSABI = require("opthy-v0-core/artifacts/Opthys").abi;
 export const name2ABI = (contractName) => {
     if (contractName == "ERC20") {
         return ERC20ABI;
+    }
+    if (contractName == "Opthy") {
+        return OPTHYABI;
     }
     if (contractName == "Opthys") {
         return OPTHYSABI;

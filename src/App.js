@@ -40,6 +40,9 @@ export const SWRProvider = () => {
   }
 
   const fetcher = (arg1, ...args) => {
+    if (arg1 == " ") {
+      return Promise.resolve(null)
+    }
     console.log(arg1, ...args)////////////////////////////////////////////////////////////////////
     //arg1 is an address, so it's a contract call
     if (isAddress(arg1)) {
