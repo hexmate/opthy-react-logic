@@ -37,10 +37,10 @@ export const useDefaultSendOptions = () => {
 export const useOpthysAddress = () => {
     const { chainId } = useWeb3React()
     if (chainId == NervosChainId) {
-        return "0x085d9cE0e895D138af16fc0a080fa4159B0233c9";
+        return "0x3Cb3bDF756266fbCA2b7485787A94761d67100B3";
     }
     if (chainId == RinkebyChainId) {
-        return "0x558c1f3ADC1A20E8Be8052840360Edd1020DB88f";
+        return "0xAF0331D79697335305da49943B52Caafaf2A06A4";
     }
 }
 
