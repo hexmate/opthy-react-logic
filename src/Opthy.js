@@ -2,13 +2,23 @@
 
 import { formatUnits, formatEther } from '@ethersproject/units';
 import { useERC20Metadata, usePolyWeb3React, ZeroAccount, name2ABI } from "./utils";
-import { Action } from "./Action";
-import { ReclaimAction } from "./ReclaimAction";
+import { useState } from 'react';
 import useSWR from 'swr';
+import { Agree } from "./Agree";
+import { Swap } from "./Swap";
+import { Reclaim } from "./Reclaim";
 
 
 export const Opthy = (props) => {
-    const data = useUnpackedOpthy(props.data, props.mutateOpthy)
+    const { data, mutate } = useUnpackedOpthy(props.data, props.mutateOpthy)
+    const [status, _setStatus] = useState(null);
+    const setStatus = (message) => {
+        _setStatus(message);
+        mutate()
+        setTimeout(function () {
+            _setStatus(null);
+        }, 5000);
+    }
 
     const { address, lastEdit, phase, duration, owner, iAmOwner, holder, iAmHolder, seller, iAmSeller, price, currencyBalance, token0, token1 } = data
     return (
@@ -53,11 +63,12 @@ export const Opthy = (props) => {
             <div> User Balance: {formatUnits(token1.UserBalance, token1.decimals)}</div>
             <div> User Allowance: {formatUnits(token1.UserAllowance, token1.decimals)}</div>
 
-            {/* <ReclaimAction data={data} /> */}
-            <Action ERC20={{ data: token0, spender: address, amount: 1 }} asyncAction={doNothing} actionLabel="No-op" currencyBalance={data.currencyBalance} mutate={data.mutate} />
-            {/* <Action asyncAction={doNothing} actionLabel="No-op" currencyBalance={data.currencyBalance} mutate={data.mutate} /> */}
+            {status ? <div> Status: {status} </div> : null}
 
-            {/* {props.actionLabel ? <button type="button" onClick={props.onClick}>{props.actionLabel}</button> : null} */}
+            <Agree data={data} setStatus={setStatus} />
+            <Swap data={data} setStatus={setStatus} />
+            <Swap data={data} reverse={true} setStatus={setStatus} />
+            <Reclaim data={data} setStatus={setStatus} />
         </div>
     )
 }
@@ -163,7 +174,7 @@ const useUnpackedOpthy = (opthy, mutateOpthy) => {
 
     result.ABI = name2ABI("Opthy")
 
-    result.mutate = () => {
+    mutate = () => {
         mutateCurrencyBalance()
         mutateToken0UserBalance()
         mutateToken0UserAllowance()
@@ -172,5 +183,5 @@ const useUnpackedOpthy = (opthy, mutateOpthy) => {
         mutateOpthy()
     }
 
-    return result
+    return { data: result, mutate }
 }
