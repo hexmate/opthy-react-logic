@@ -17,8 +17,9 @@ export const NewOpthy = (props) => {
 
     const [holder, seller] = iSell ? [ZeroAccount, polyaccount] : [polyaccount, ZeroAccount]
     duration = (daysDuration || 1) * 60 * 60 * 24
+    const opthysAddress = useOpthysAddress()
     const { data, mutate } = useUnpackedOpthy({
-        opthy: useOpthysAddress(),
+        opthy: opthysAddress,
         phase: 1,
         duration,
         holder,
@@ -32,22 +33,21 @@ export const NewOpthy = (props) => {
         r1: "0",
     }, () => { })
 
-    const fee = parseUnits(feeHR || "0", data.token0.decimals)
-    const initialLiquidity = parseUnits(initialLiquidityHR || "0", data.token0.decimals)
-    const r1 = parseUnits(r1HR || "0", data.token1.decimals)
+    const fee = BigInt(parseUnits(feeHR || "0", data.token0.decimals))
+    const initialLiquidity = BigInt(parseUnits(initialLiquidityHR || "0", data.token0.decimals))
+    const r1 = BigInt(parseUnits(r1HR || "0", data.token1.decimals))
 
     const r0 = initialLiquidity + fee
     const amount = iSell ? initialLiquidity : fee
 
     const newOpthy = async () => {
-        const contract = new Contract(useOpthysAddress(), name2ABI("Opthys"), library.getSigner(window.ethereum.selectedAddress))
+        const contract = new Contract(opthysAddress, name2ABI("Opthys"), library.getSigner(window.ethereum.selectedAddress))
         return contract.newOpthy(iSell, duration, token0, token1, r0, r1, amount)
     }
 
     return (
         <form>
-            <h2> Create New Opthy </h2>
-            <select value={iSell} onChange={setISell} required>
+            <select value={iSell} onChange={(e) => setISell(e.currentTarget.value)} required>
                 <option value={true}>I'm the seller</option>
                 <option value={false}>I'm the holder</option>
             </select>
@@ -70,7 +70,7 @@ export const NewOpthy = (props) => {
             <Action
                 ERC20={{
                     data: data.token0,
-                    spender: useOpthysAddress(),
+                    spender: opthysAddress,
                     amount: amount
                 }}
                 asyncAction={newOpthy}

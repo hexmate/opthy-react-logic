@@ -61,7 +61,10 @@ export const SWRProvider = () => {
         //Keep only opthy avaiable for buy that are not from this account
         // <Opthys filter={(o) => (o.holder == ZeroAccount && o.seller != polyaccount)} propsFactory={propsFactory} />
         <>
+          <h1>Opthy</h1>
+          <h2> Create New Opthy </h2>
           <NewOpthy />
+          <h2> Opthy Listings</h2>
           <Opthys propsFactory={propsFactory} />
         </>
       ) : (

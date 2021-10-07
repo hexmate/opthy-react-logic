@@ -1,5 +1,7 @@
 # Web User Interface for opthy
 
+Opthy react logic is the front-end of [opthy-v0-core](https://github.com/opthydefi/opthy-v0-core/)
+
 ## Building and running on localhost
 
 First install dependencies:
